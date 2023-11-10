@@ -2,15 +2,22 @@ import { OverlayScrollbars } from './overlayscrollbars.esm.min.js';
 import { reformateDate } from "./helper.js";
 import { deleteData, getData } from './service.js';
 import { financeControl } from './financeControl.js';
+import { clearChart, generateChart } from './generateChart.js';
 
 const typeOperation = {
     income: 'доход',
     expenses: 'расход',
 };
+
+let actualData = [];
+
 const financeReport = document.querySelector('.finance__report');
 const report = document.querySelector('.report');
 const reportOperationList = document.querySelector('.report__operation-list');
 const reportDates = document.querySelector('.report__dates');
+
+const generateChartButton = document.querySelector('#generateChartButton');
+
 OverlayScrollbars(report, {});
 
 const closeReport = ({ target }) => {
@@ -72,10 +79,8 @@ export const reportControl = () => {
             const reportRow = btnDelete.closest('.report__row');
             reportRow.remove();
             financeControl();
-            // !todo  clearChart();
+            clearChart();
         }
-
-        // to do: добавлять категорию в базу при её добавлениию Для этого заново формировать datalist (стр 36 html)
     });
 
     financeReport.addEventListener('click', async () => {
@@ -83,12 +88,13 @@ export const reportControl = () => {
         financeReport.textContent = 'Загрузка...';
         financeReport.disabled = true;
 
-        const data = await getData('/finance');
+        actualData = await getData('/test');
+        // actualData = await getData('/finance');
 
         financeReport.textContent = textContent;
         financeReport.disabled = false;
 
-        renderReport(data);
+        renderReport(actualData);
         openReport();
     });
 
@@ -105,8 +111,14 @@ export const reportControl = () => {
         };
 
         const queryString = searchParams.toString();
-        const url = queryString ? `/finance?${queryString}` : '/finance';
-        const data = await getData(url)
-        renderReport(data);
+        const url = queryString ? `/test?${queryString}` : '/test';
+        // const url = queryString ? `/finance?${queryString}` : '/finance';
+        actualData = await getData(url);
+        renderReport(actualData);
+        clearChart();
     });
 };
+
+generateChartButton.addEventListener('click', () => {
+    generateChart(actualData);
+})

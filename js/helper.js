@@ -5,7 +5,7 @@ export const reformateDate = (dateStr) => {
 
 export const convertStringNumber = (str) => {
     // уберём все пробелы
-    const noSpaceStr = str.replace(/\s+/g, '');
+    const noSpaceStr = String(str).replace(/\s+/g, '');
     // уберём лишние знаки после .
     const num = parseFloat(noSpaceStr);
 
